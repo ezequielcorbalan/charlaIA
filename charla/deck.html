@@ -12,9 +12,13 @@
   * { box-sizing: border-box; }
   html, body { margin:0; padding:0; height:100%; background:#0a0d14; overflow:hidden;
                font-family:'IBM Plex Sans', system-ui, sans-serif; }
-  #escenario { position:fixed; inset:0; display:grid; place-items:center; }
-  #pista { width:1920px; height:1080px; position:relative; transform-origin:center center;
-           box-shadow:0 30px 80px rgba(0,0,0,.6); }
+  /* El lienzo mide 1920x1080 y casi siempre es mas grande que la ventana.
+     Centrarlo con grid o flex no sirve: el centrado se calcula ANTES de la
+     escala y la diapositiva queda corrida y cortada. Se ancla al centro y se
+     corre con translate, que si ocurre junto con la escala. */
+  #escenario { position:fixed; inset:0; overflow:hidden; }
+  #pista { position:absolute; left:50%; top:50%; width:1920px; height:1080px;
+           transform-origin:center center; box-shadow:0 30px 80px rgba(0,0,0,.6); }
   /* cada diapositiva trae su propio display en el atributo style, que le gana
      a una regla normal: por eso el !important */
   section { position:absolute; inset:0; width:1920px; height:1080px; overflow:hidden; }
@@ -763,7 +767,7 @@
     return (bx + px) + ',' + (by + py) + ' ' + pb[0] + ',' + pb[1] + ' ' + (bx - px) + ',' + (by - py);
   }
 
-  document.querySelectorAll('x-connector').forEach(function (el) {
+  function dibujarConector(el) {
     const est = getComputedStyle(el);
     const color = est.color || '#888';
     const grosor = parseFloat(est.borderTopWidth) || 2;
@@ -805,13 +809,16 @@
         + (cabeza === 'none' ? '' : '<polygon points="' + flecha(ini, fin, grosor) + '" fill="' + color + '"/>')
         + '</svg>';
     }
-  });
+  }
 
-  // ---- encajar diapositivas mas altas que 1080
-  // Se achica el bloque de diagrama, no el texto, y con transform para que los
-  // conectores (que ya estan dibujados) escalen junto con las cajas.
+  // ---- preparar cada diapositiva
+  // Los conectores se dibujan con la diapositiva VISIBLE: si esta en display:none
+  // su contenedor mide cero y las lineas salen de tamano cero.
+  // Despues se achica el bloque de diagrama si la diapositiva pasa de 1080, con
+  // transform, para que los conectores ya dibujados escalen junto con las cajas.
   document.querySelectorAll('#pista > section').forEach(function (s) {
     s.classList.add('activa');
+    s.querySelectorAll('x-connector').forEach(dibujarConector);
     const exceso = s.scrollHeight - 1080;
     if (exceso > 1) {
       const bloques = Array.from(s.children).filter(function (el) {
@@ -851,7 +858,7 @@
   function encajar() {
     const esc = document.getElementById('escenario').getBoundingClientRect();
     const k = Math.min(esc.width / 1920, esc.height / 1080) * 0.98;
-    pista.style.transform = 'scale(' + k + ')';
+    pista.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
   }
 
   document.getElementById('btn-siguiente').onclick = function () { mostrar(actual + 1); };
