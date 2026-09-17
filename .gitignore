@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+
+# Lo que generan los scripts
+demo-blender/salida/*
+!demo-blender/salida/.gitkeep
+
+# El sitio de la demo web vive en su propio repositorio
+demo-web/et21/
