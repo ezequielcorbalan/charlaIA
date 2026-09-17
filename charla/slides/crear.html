@@ -1,0 +1,32 @@
+<section id="crear" data-transition="fade" style="background:#151C2E; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">5 · Cómo se hace un agente</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Tres formas, de fácil a difícil</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:32px 24px">
+      <p style="font-size:24px; color:#3FD1C0; font-weight:600">Nivel 1 · sin programar</p>
+      <h3 style="font-size:32px; font-weight:600">Un archivo Markdown</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Claude Code lo lee y ya existe el agente.</p>
+      <div style="background:#0A0F1A; border:1px solid #2A3450; border-radius:12px; padding:24px">
+        <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.5; color:#F3F0E8; white-space:nowrap"><span style="color:#6E7890">.claude/agents/web.md</span><br>---<br>name: web<br>description: Arma sitios<br>tools: Read, Write, Bash<br>---<br>Sos un dev frontend.<br>Usá HTML y CSS simples.</p>
+      </div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:32px 24px">
+      <p style="font-size:24px; color:#F5B942; font-weight:600">Nivel 2 · unas líneas</p>
+      <h3 style="font-size:32px; font-weight:600">Agent SDK</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">El motor del harness, como librería.</p>
+      <div style="background:#0A0F1A; border:1px solid #2A3450; border-radius:12px; padding:24px">
+        <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.5; color:#F3F0E8; white-space:nowrap"><span style="color:#F5B942">from</span> claude_agent_sdk <span style="color:#F5B942">import</span> (<br>&#160;&#160;query, ClaudeAgentOptions)<br><br><span style="color:#F5B942">async for</span> m <span style="color:#F5B942">in</span> query(<br>&#160;&#160;prompt=<span style="color:#3FD1C0">"Armá la web"</span>,<br>&#160;&#160;options=ClaudeAgentOptions(<br>&#160;&#160;&#160;&#160;allowed_tools=[<span style="color:#3FD1C0">"Read"</span>,<br>&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#3FD1C0">"Write"</span>,<span style="color:#3FD1C0">"Bash"</span>])):<br>&#160;&#160;print(m)</p>
+      </div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:32px 24px">
+      <p style="font-size:24px; color:#F5B942; font-weight:600">Nivel 3 · el loop a mano</p>
+      <h3 style="font-size:32px; font-weight:600">La API directa</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Vos escribís el loop de la slide 9.</p>
+      <div style="background:#0A0F1A; border:1px solid #2A3450; border-radius:12px; padding:24px">
+        <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.5; color:#F3F0E8; white-space:nowrap"><span style="color:#F5B942">while</span> True:<br>&#160;&#160;r = client.messages.create(<br>&#160;&#160;&#160;&#160;model=<span style="color:#3FD1C0">"claude-opus-5"</span>,<br>&#160;&#160;&#160;&#160;tools=tools,<br>&#160;&#160;&#160;&#160;messages=msgs,<br>&#160;&#160;&#160;&#160;max_tokens=16000)<br>&#160;&#160;<span style="color:#F5B942">if</span> r.stop_reason!=<span style="color:#3FD1C0">"tool_use"</span>:<br>&#160;&#160;&#160;&#160;<span style="color:#F5B942">break</span><br>&#160;&#160;msgs += ejecutar(r)</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 13</p>
+  <aside>2 min. Nivel 1: un archivo de texto con nombre, descripción, qué herramientas puede usar y las instrucciones. Eso ya es un subagente en Claude Code; cualquiera de ustedes lo puede escribir hoy. Nivel 2: el Agent SDK es el mismo motor del harness que acabamos de ver, como librería de Python o TypeScript; con diez líneas tenés un agente con herramientas de archivos y terminal. Nivel 3: la API cruda; escribís vos el loop que vimos en la slide 9: llamás al modelo, si pide una herramienta la ejecutás y le devolvés el resultado, hasta que deja de pedir. Los tres hacen lo mismo; cambia cuánto control querés.</aside>
+</section>

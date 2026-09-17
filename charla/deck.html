@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IA, MCP y agentes — ET21</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500..700&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&amp;display=swap">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; height:100%; background:#0a0d14; overflow:hidden;
+               font-family:'IBM Plex Sans', system-ui, sans-serif; }
+  #escenario { position:fixed; inset:0; display:grid; place-items:center; }
+  #pista { width:1920px; height:1080px; position:relative; transform-origin:center center;
+           box-shadow:0 30px 80px rgba(0,0,0,.6); }
+  /* cada diapositiva trae su propio display en el atributo style, que le gana
+     a una regla normal: por eso el !important */
+  section { position:absolute; inset:0; width:1920px; height:1080px; overflow:hidden; }
+  section:not(.activa) { display:none !important; }
+  /* los bloques con alto propio no deben encogerse: si no, los diagramas
+     con coordenadas absolutas quedan comprimidos y se cortan abajo */
+  section > * { flex-shrink:0; }
+  section aside { display:none; }
+  h1,h2,h3,p,ul,ol { margin:0; }
+  ul,ol { padding-left:1.3em; }
+  li { margin:.15em 0; }
+  table { border-collapse:collapse; width:100%; }
+  th,td { padding:.35em .6em; text-align:left; border:1px solid rgba(255,255,255,.10); }
+  x-icon { display:inline-block; }
+  x-icon svg { width:100%; height:100%; display:block; fill:none;
+               stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+
+  /* barra inferior */
+  #barra { position:fixed; left:0; right:0; bottom:0; height:44px; display:flex; align-items:center;
+           gap:18px; padding:0 18px; background:rgba(10,13,20,.92); color:#8b95a8;
+           font-size:13px; border-top:1px solid rgba(255,255,255,.08); z-index:20; }
+  #barra button { background:transparent; border:1px solid rgba(255,255,255,.18); color:#c7cedb;
+                  border-radius:7px; padding:5px 11px; font-size:13px; cursor:pointer;
+                  font-family:inherit; }
+  #barra button:hover { background:rgba(255,255,255,.08); }
+  #contador { font-variant-numeric:tabular-nums; color:#e6eaf2; }
+  #titulo-slide { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  /* notas del orador */
+  #notas { position:fixed; right:0; top:0; bottom:44px; width:420px; background:#12161f;
+           border-left:1px solid rgba(255,255,255,.10); padding:26px 28px; overflow:auto;
+           color:#c7cedb; font-size:15px; line-height:1.6; display:none; z-index:19; }
+  #notas.visible { display:block; }
+  #notas h4 { margin:0 0 14px; font-size:12px; letter-spacing:2px; text-transform:uppercase;
+              color:#f5b942; font-weight:600; }
+  body.con-notas #escenario { right:420px; }
+
+  @media print { #barra, #notas { display:none !important; } }
+</style>
+</head>
+<body>
+<div id="escenario"><div id="pista">
+<section id="cover" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px; display:flex; flex-direction:column; justify-content:space-between">
+  <div style="position:absolute; left:0; top:0; width:1920px; height:14px; background:linear-gradient(90deg, #F5B942 0%, #3FD1C0 100%)"></div>
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">Escuela Técnica N° 21 · Fragata Escuela Libertad</p>
+  <div style="display:flex; flex-direction:column; gap:32px">
+    <h1 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:120px; font-weight:700; line-height:1.05">IA que hace cosas</h1>
+    <p style="font-size:44px; color:#B7BFD0; line-height:1.3">Modelos, MCP y agentes: 15 minutos de teoría y 25 de demo en vivo</p>
+  </div>
+  <div style="display:flex; justify-content:space-between; align-items:flex-end">
+    <p style="font-size:32px; font-weight:600">Ezequiel Corbalán</p>
+    <p style="font-size:32px; color:#B7BFD0">18 de septiembre de 2026</p>
+  </div>
+  
+</section>
+<section id="agenda" data-transition="fade" style="background:#151C2E; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Qué vamos a hacer hoy</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:40px">
+      <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:120px; font-weight:700; line-height:1; color:#F5B942">15</p>
+      <h3 style="font-size:32px; font-weight:600">minutos de teoría</h3>
+      <ul style="font-size:24px; color:#B7BFD0; line-height:1.5">
+        <li>Dónde está la IA hoy</li>
+        <li>Cómo funciona un modelo</li>
+        <li>Herramientas y MCP</li>
+        <li>Agentes y el harness que los corre</li>
+        <li>Cómo se hace uno</li>
+      </ul>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:40px">
+      <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:120px; font-weight:700; line-height:1; color:#3FD1C0">25</p>
+      <h3 style="font-size:32px; font-weight:600">minutos de demo en vivo</h3>
+      <ul style="font-size:24px; color:#B7BFD0; line-height:1.5">
+        <li>Agente 1: la web de la escuela, publicada</li>
+        <li>Agente 2: un plano en imagen, convertido a 3D</li>
+        <li>Los dos al mismo tiempo</li>
+      </ul>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:40px">
+      <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:120px; font-weight:700; line-height:1; color:#F5B942">5</p>
+      <h3 style="font-size:32px; font-weight:600">minutos de cierre</h3>
+      <ul style="font-size:24px; color:#B7BFD0; line-height:1.5">
+        <li>Qué significa para ustedes</li>
+        <li>Cómo empezar hoy</li>
+        <li>Preguntas</li>
+      </ul>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 2</p>
+  
+</section>
+<section id="estado" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">1 · Estado de la IA</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">De chat a agente en cuatro años</h2>
+  <div style="display:flex; gap:24px; align-items:center">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:40px">
+      <p style="font-size:24px; color:#6E7890; font-weight:600">2022 – 2023</p>
+      <h3 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600">Chat</h3>
+      <p style="font-size:28px; color:#B7BFD0; line-height:1.4">Le preguntás, te responde. Todo queda en la ventana de texto.</p>
+    </div>
+    <x-connector style="width:48px; color:#F5B942; border-width:4px"></x-connector>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:40px">
+      <p style="font-size:24px; color:#6E7890; font-weight:600">2024 – 2025</p>
+      <h3 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600">Copiloto</h3>
+      <p style="font-size:28px; color:#B7BFD0; line-height:1.4">Vive adentro de tu editor. Sugiere, completa, corrige. Vos apretás el botón.</p>
+    </div>
+    <x-connector style="width:48px; color:#F5B942; border-width:4px"></x-connector>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:40px">
+      <p style="font-size:24px; color:#3FD1C0; font-weight:600">2026</p>
+      <h3 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600">Agente</h3>
+      <p style="font-size:28px; color:#B7BFD0; line-height:1.4">Recibe un objetivo, usa programas, se equivoca, se corrige y termina el trabajo.</p>
+    </div>
+  </div>
+  <p style="font-size:32px; color:#F3F0E8; line-height:1.4">El cambio no es que la IA sea más inteligente. Es que ahora <b>tiene manos</b>.</p>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 3</p>
+  
+</section>
+<section id="hoy" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">1 · Estado de la IA</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Tres cosas que cambiaron</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px">
+      <x-icon name="Book" style="width:56px; height:56px; color:#F5B942"></x-icon>
+      <h3 style="font-size:32px; font-weight:600">Contexto enorme</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Lee un proyecto entero, un libro o una conversación de horas sin perder el hilo.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px">
+      <x-icon name="Tool" style="width:56px; height:56px; color:#F5B942"></x-icon>
+      <h3 style="font-size:32px; font-weight:600">Usa herramientas</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Ejecuta código, navega, controla programas como Blender o un servidor.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px">
+      <x-icon name="Activity" style="width:56px; height:56px; color:#F5B942"></x-icon>
+      <h3 style="font-size:32px; font-weight:600">Trabaja solo</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Planifica, prueba, ve el error y lo corrige. Tareas de horas, no de segundos.</p>
+    </div>
+  </div>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:8px; border-left:6px solid #3FD1C0; padding:8px 0 8px 28px">
+      <h3 style="font-size:28px; font-weight:600; color:#3FD1C0">Computación</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Escribir, testear y publicar software. Revisar código. Automatizar lo repetitivo.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:8px; border-left:6px solid #3FD1C0; padding:8px 0 8px 28px">
+      <h3 style="font-size:28px; font-weight:600; color:#3FD1C0">Construcción</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Leer planos, calcular cómputos, armar modelos 3D, presupuestar, documentar obra.</p>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 4</p>
+  
+</section>
+<section id="modelo" data-transition="fade" style="background:#151C2E; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">2 · Cómo funciona un modelo</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Un modelo predice la próxima palabra</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:24px; justify-content:center; background:#0E1320; border:2px solid #2A3450; border-radius:20px; padding:48px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:32px; line-height:1.5; color:#B7BFD0">La capital de Argentina es <span style="color:#F5B942">___</span></p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:32px; line-height:1.5; color:#B7BFD0">Buenos <span style="color:#F5B942">___</span></p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:32px; line-height:1.5; color:#B7BFD0">Buenos Aires<span style="color:#F5B942">.</span></p>
+      <p style="font-size:26px; color:#6E7890; line-height:1.4">Una palabra por vez, miles de veces por segundo. Con eso escribe, razona y programa.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:20px">
+      <div style="display:flex; gap:20px; align-items:center; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:28px 32px">
+        <x-icon name="Warning" style="width:44px; height:44px; color:#F5B942"></x-icon>
+        <div style="display:flex; flex-direction:column; gap:4px">
+          <h3 style="font-size:32px; font-weight:600">No tiene manos</h3>
+          <p style="font-size:24px; color:#B7BFD0">No ejecuta nada por sí solo.</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:20px; align-items:center; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:28px 32px">
+        <x-icon name="Warning" style="width:44px; height:44px; color:#F5B942"></x-icon>
+        <div style="display:flex; flex-direction:column; gap:4px">
+          <h3 style="font-size:32px; font-weight:600">No tiene internet</h3>
+          <p style="font-size:24px; color:#B7BFD0">Solo ve lo que le pasás en la conversación.</p>
+        </div>
+      </div>
+      <div style="display:flex; gap:20px; align-items:center; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:28px 32px">
+        <x-icon name="Warning" style="width:44px; height:44px; color:#F5B942"></x-icon>
+        <div style="display:flex; flex-direction:column; gap:4px">
+          <h3 style="font-size:32px; font-weight:600">No tiene memoria</h3>
+          <p style="font-size:24px; color:#B7BFD0">Cerrás la ventana y se olvida de todo.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:32px; line-height:1.4">Todo lo que sigue es darle <b>manos</b>, <b>ojos</b> y <b>memoria</b>.</p>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 5</p>
+  
+</section>
+<section id="herramientas" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:32px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">3 · Herramientas</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">El modelo pide, el programa ejecuta</h2>
+  <!-- Modelo 0,180,360,240  Programa 652,180,360,240  Herramienta 1304,180,360,240  Ejemplo 0,480,1664,200 -->
+  <div style="position:relative; width:1664px; height:700px">
+    <div style="position:absolute; left:0; top:180px; width:360px; height:240px; display:flex; flex-direction:column; justify-content:center; gap:8px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:32px">
+      <h3 style="font-size:32px; font-weight:600">Modelo</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Piensa y decide qué hacer. Solo escribe texto.</p>
+    </div>
+    <div style="position:absolute; left:652px; top:180px; width:360px; height:240px; display:flex; flex-direction:column; justify-content:center; gap:8px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:32px">
+      <h3 style="font-size:32px; font-weight:600">Programa</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Claude Code. Lee el pedido y lo ejecuta de verdad.</p>
+    </div>
+    <div style="position:absolute; left:1304px; top:180px; width:360px; height:240px; display:flex; flex-direction:column; justify-content:center; gap:8px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:32px">
+      <h3 style="font-size:32px; font-weight:600">Herramienta</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Archivos, terminal, Blender, navegador, servidor.</p>
+    </div>
+    <x-connector x1="360" y1="260" x2="652" y2="260" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="652" y1="340" x2="360" y2="340" style="color:#3FD1C0; border-width:4px"></x-connector>
+    <x-connector x1="1012" y1="260" x2="1304" y2="260" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1304" y1="340" x2="1012" y2="340" style="color:#3FD1C0; border-width:4px"></x-connector>
+    <p style="position:absolute; left:372px; top:216px; width:268px; font-size:24px; font-weight:600; color:#F5B942; text-align:center; white-space:nowrap">1. pide</p>
+    <p style="position:absolute; left:372px; top:354px; width:268px; font-size:24px; font-weight:600; color:#3FD1C0; text-align:center; white-space:nowrap">4. recibe</p>
+    <p style="position:absolute; left:1024px; top:216px; width:268px; font-size:24px; font-weight:600; color:#F5B942; text-align:center; white-space:nowrap">2. ejecuta</p>
+    <p style="position:absolute; left:1024px; top:354px; width:268px; font-size:24px; font-weight:600; color:#3FD1C0; text-align:center; white-space:nowrap">3. responde</p>
+    <div style="position:absolute; left:0; top:480px; width:1664px; height:200px; display:flex; flex-direction:column; justify-content:center; gap:12px; background:#151C2E; border-left:6px solid #F5B942; border-radius:12px; padding:32px 40px">
+      <h3 style="font-size:28px; font-weight:600; color:#F5B942">En criollo</h3>
+      <p style="font-size:28px; color:#F3F0E8; line-height:1.4">El modelo escribe «leé index.html». Claude Code abre el archivo y le devuelve el texto. El modelo lo lee y decide el próximo paso. Nunca tocó el disco: pidió, y alguien con manos lo hizo.</p>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 6</p>
+  
+</section>
+<section id="mcp" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:32px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">3 · MCP: Model Context Protocol</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">MCP es el USB‑C de la IA</h2>
+  <!-- Host 0,200,420,300  Blender 1244,0,420,130  Coolify 1244,190,420,130  GitHub 1244,380,420,130  Drive 1244,570,420,130  bus x=832 -->
+  <div style="position:relative; width:1664px; height:700px">
+    <div style="position:absolute; left:0; top:200px; width:420px; height:300px; display:flex; flex-direction:column; justify-content:center; gap:12px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:36px">
+      <p style="font-size:24px; color:#3FD1C0; font-weight:600">Cliente MCP</p>
+      <h3 style="font-size:36px; font-weight:600">Claude Code</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Acá viven el modelo y el agente. Un solo enchufe para todo.</p>
+    </div>
+    <div style="position:absolute; left:1244px; top:0; width:420px; height:130px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:24px 32px">
+      <h3 style="font-size:32px; font-weight:600">Blender</h3>
+      <p style="font-size:24px; color:#B7BFD0">crear objetos, renderizar</p>
+    </div>
+    <div style="position:absolute; left:1244px; top:190px; width:420px; height:130px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:24px 32px">
+      <h3 style="font-size:32px; font-weight:600">Cloudflare</h3>
+      <p style="font-size:24px; color:#B7BFD0">publicar el sitio</p>
+    </div>
+    <div style="position:absolute; left:1244px; top:380px; width:420px; height:130px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:24px 32px">
+      <h3 style="font-size:32px; font-weight:600">GitHub</h3>
+      <p style="font-size:24px; color:#B7BFD0">repositorios, código, PRs</p>
+    </div>
+    <div style="position:absolute; left:1244px; top:570px; width:420px; height:130px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:24px 32px">
+      <h3 style="font-size:32px; font-weight:600">Navegador</h3>
+      <p style="font-size:24px; color:#B7BFD0">abrir páginas, probar la web</p>
+    </div>
+    <x-connector x1="420" y1="350" x2="832" y2="350" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="65" x2="832" y2="635" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="65" x2="1244" y2="65" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="255" x2="1244" y2="255" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="445" x2="1244" y2="445" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="635" x2="1244" y2="635" style="color:#F5B942; border-width:4px"></x-connector>
+    <p style="position:absolute; left:480px; top:296px; width:300px; font-size:28px; font-weight:600; color:#F5B942; text-align:center; white-space:nowrap">protocolo MCP</p>
+    <p style="position:absolute; left:860px; top:660px; width:360px; font-size:24px; color:#6E7890; white-space:nowrap">servidores MCP</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 7</p>
+  
+</section>
+<section id="mcp-que" data-transition="fade" style="background:#151C2E; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">3 · MCP: Model Context Protocol</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Qué ofrece un servidor MCP</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:36px">
+      <x-icon name="Lightning" style="width:52px; height:52px; color:#F5B942"></x-icon>
+      <h3 style="font-size:36px; font-weight:600">Tools</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Acciones que el modelo puede pedir. Cada una tiene nombre, descripción y parámetros.</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#F5B942; line-height:1.5">crear_pared(x, y, largo)<br>deployar_app(nombre)</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px">
+      <x-icon name="Database" style="width:52px; height:52px; color:#3FD1C0"></x-icon>
+      <h3 style="font-size:36px; font-weight:600">Resources</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Datos que el modelo puede leer: archivos, la escena de Blender, una tabla, un manual.</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#3FD1C0; line-height:1.5">escena://objetos<br>docs://api/blender</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px">
+      <x-icon name="Book" style="width:52px; height:52px; color:#3FD1C0"></x-icon>
+      <h3 style="font-size:36px; font-weight:600">Prompts</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Recetas listas para tareas comunes, escritas por quien hizo el servidor.</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#3FD1C0; line-height:1.5">"armá una casa desde<br>este plano"</p>
+    </div>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:12px; background:#0E1320; border-left:6px solid #F5B942; border-radius:12px; padding:28px 40px">
+    <h3 style="font-size:28px; font-weight:600; color:#F5B942">Lo que vamos a usar hoy del servidor de Blender</h3>
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:26px; color:#B7BFD0; line-height:1.5">get_objects_summary · execute_blender_code · render_viewport_to_path</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 8</p>
+  
+</section>
+<section id="agente" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:32px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">4 · Agentes</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Un agente es un loop</h2>
+  <!-- Objetivo 0,120,352,160  Pensar 437,120,352,160  Herramienta 874,120,352,160  Resultado 1311,120,352,160  Listo 1311,400,352,140  Ejemplo 0,580,1664,120 -->
+  <div style="position:relative; width:1664px; height:700px">
+    <div style="position:absolute; left:0; top:120px; width:352px; height:160px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600">1. Objetivo</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">lo que pediste</p>
+    </div>
+    <div style="position:absolute; left:437px; top:120px; width:352px; height:160px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600">2. Pensar</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">¿qué falta? ¿qué sigue?</p>
+    </div>
+    <div style="position:absolute; left:874px; top:120px; width:352px; height:160px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600">3. Herramienta</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">leer, escribir, ejecutar</p>
+    </div>
+    <div style="position:absolute; left:1311px; top:120px; width:352px; height:160px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600">4. Resultado</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">¿funcionó? ¿hubo error?</p>
+    </div>
+    <div style="position:absolute; left:1311px; top:400px; width:352px; height:140px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600; color:#3FD1C0">5. Listo</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">objetivo cumplido</p>
+    </div>
+    <x-connector x1="352" y1="200" x2="437" y2="200" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="789" y1="200" x2="874" y2="200" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1226" y1="200" x2="1311" y2="200" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1487" y1="120" x2="1487" y2="40" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1487" y1="40" x2="613" y2="40" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="613" y1="40" x2="613" y2="120" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1487" y1="280" x2="1487" y2="400" style="color:#3FD1C0; border-width:4px"></x-connector>
+    <p style="position:absolute; left:800px; top:56px; width:500px; font-size:24px; font-weight:600; color:#F5B942; text-align:center; white-space:nowrap">falta algo: volver a pensar</p>
+    <div style="position:absolute; left:0; top:580px; width:1664px; height:120px; display:flex; flex-direction:column; justify-content:center; gap:8px; background:#151C2E; border-left:6px solid #F5B942; border-radius:12px; padding:20px 40px">
+      <p style="font-size:26px; color:#F3F0E8; line-height:1.4">«Armá la web de la escuela»: lee la carpeta, escribe el HTML, levanta el servidor, saca una captura, ve que el menú está roto, lo corrige, vuelve a mirar. Decenas de vueltas hasta que queda.</p>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 9</p>
+  
+</section>
+<section id="anatomia" data-transition="fade" style="background:#151C2E; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">4 · Agentes</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Anatomía de un agente</h2>
+  <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:28px">
+    <div style="display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px 32px">
+      <x-icon name="Book" style="width:56px; height:56px; color:#F5B942"></x-icon>
+      <h3 style="font-size:32px; font-weight:600">Instrucciones</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.45">Quién es, cómo trabaja, qué estilo tiene. Un texto que se escribe una vez.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px 32px">
+      <x-icon name="Tool" style="width:56px; height:56px; color:#F5B942"></x-icon>
+      <h3 style="font-size:32px; font-weight:600">Herramientas</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.45">Qué puede tocar: archivos, terminal, servidores MCP. Menos es mejor.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px 32px">
+      <x-icon name="Database" style="width:56px; height:56px; color:#F5B942"></x-icon>
+      <h3 style="font-size:32px; font-weight:600">Memoria</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.45">La conversación, más archivos donde anota lo que aprende para la próxima.</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px 32px">
+      <x-icon name="Lock" style="width:56px; height:56px; color:#F5B942"></x-icon>
+      <h3 style="font-size:32px; font-weight:600">Permisos</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.45">Qué hace solo y qué pregunta antes. Borrar o publicar siempre se pregunta.</p>
+    </div>
+  </div>
+  <div style="display:flex; gap:32px; align-items:center; background:#0E1320; border:2px solid #3FD1C0; border-radius:20px; padding:36px 48px">
+    <x-icon name="Lightbulb" style="width:64px; height:64px; color:#3FD1C0"></x-icon>
+    <p style="font-size:32px; line-height:1.4">Un agente bueno no es el que hace de todo. Es el que tiene <b>una tarea clara</b>, <b>pocas herramientas</b> y <b>límites</b>.</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 10</p>
+  
+</section>
+<section id="subagentes" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:32px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">4 · Agentes</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Subagentes: dos trabajos a la vez</h2>
+  <!-- Orquestador 632,0,400,140  A1 100,300,560,200  A2 1004,300,560,200  R1 100,560,560,120  R2 1004,560,560,120  bus y=220 -->
+  <div style="position:relative; width:1664px; height:700px">
+    <div style="position:absolute; left:632px; top:0; width:400px; height:140px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:24px 32px">
+      <h3 style="font-size:32px; font-weight:600">Orquestador</h3>
+      <p style="font-size:24px; color:#B7BFD0">reparte y coordina</p>
+    </div>
+    <div style="position:absolute; left:100px; top:300px; width:560px; height:200px; display:flex; flex-direction:column; justify-content:center; gap:8px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:28px 36px">
+      <h3 style="font-size:32px; font-weight:600">Agente 1 · Web</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Escribe la página, la sube a GitHub y Coolify la publica. Herramientas: archivos, git, navegador.</p>
+    </div>
+    <div style="position:absolute; left:1004px; top:300px; width:560px; height:200px; display:flex; flex-direction:column; justify-content:center; gap:8px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:28px 36px">
+      <h3 style="font-size:32px; font-weight:600">Agente 2 · 3D</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Mira el plano, calcula las paredes y las construye en Blender. Herramientas: visión, MCP de Blender.</p>
+    </div>
+    <div style="position:absolute; left:100px; top:560px; width:560px; height:120px; display:flex; flex-direction:column; justify-content:center; background:#151C2E; border:2px solid #3FD1C0; border-radius:16px; padding:24px 36px">
+      <p style="font-size:28px; font-weight:600; color:#3FD1C0">La web de la escuela, en vivo</p>
+    </div>
+    <div style="position:absolute; left:1004px; top:560px; width:560px; height:120px; display:flex; flex-direction:column; justify-content:center; background:#151C2E; border:2px solid #3FD1C0; border-radius:16px; padding:24px 36px">
+      <p style="font-size:28px; font-weight:600; color:#3FD1C0">El plano en 3D, en Blender</p>
+    </div>
+    <x-connector x1="832" y1="140" x2="832" y2="220" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="380" y1="220" x2="1284" y2="220" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="380" y1="220" x2="380" y2="300" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1284" y1="220" x2="1284" y2="300" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="380" y1="500" x2="380" y2="560" style="color:#3FD1C0; border-width:4px"></x-connector>
+    <x-connector x1="1284" y1="500" x2="1284" y2="560" style="color:#3FD1C0; border-width:4px"></x-connector>
+    <p style="position:absolute; left:700px; top:380px; width:264px; font-size:26px; font-weight:600; color:#F5B942; text-align:center; white-space:nowrap">al mismo tiempo</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 11</p>
+  
+</section>
+<section id="harness" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:32px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">5 · El harness</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">El modelo es el motor. El harness es el auto</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:20px">
+      <div style="display:flex; flex-direction:column; gap:12px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:32px 36px">
+        <h3 style="font-size:32px; font-weight:600; color:#B7BFD0">El modelo</h3>
+        <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Predice la próxima palabra. No sabe qué archivo abriste ni qué pasó hace diez minutos.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:12px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:32px 36px">
+        <h3 style="font-size:32px; font-weight:600; color:#F5B942">El harness</h3>
+        <p style="font-size:26px; color:#B7BFD0; line-height:1.4">El programa que lo envuelve. Arma el pedido, ejecuta las herramientas y hace que todo esto sea usable.</p>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:10px; background:#151C2E; border-left:6px solid #3FD1C0; border-radius:12px; padding:24px 32px">
+        <p style="font-size:26px; color:#F3F0E8; line-height:1.4">Claude Code, OpenCode, Cursor, Codex y Aider son harnesses. <b>El modelo puede ser el mismo y el resultado cambia.</b></p>
+      </div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:14px">
+      <h3 style="font-size:28px; font-weight:600; color:#F5B942">Qué hace, que el modelo no hace</h3>
+      <div style="display:flex; gap:18px; align-items:center; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:20px 26px">
+        <x-icon name="Book" style="width:40px; height:40px; color:#3FD1C0"></x-icon>
+        <p style="font-size:25px; color:#B7BFD0; line-height:1.35"><b style="color:#F3F0E8">Arma el pedido.</b> Decide qué entra en la conversación y en qué orden.</p>
+      </div>
+      <div style="display:flex; gap:18px; align-items:center; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:20px 26px">
+        <x-icon name="Database" style="width:40px; height:40px; color:#3FD1C0"></x-icon>
+        <p style="font-size:25px; color:#B7BFD0; line-height:1.35"><b style="color:#F3F0E8">Maneja el contexto.</b> Cuando se llena, resume lo viejo para no perder el hilo.</p>
+      </div>
+      <div style="display:flex; gap:18px; align-items:center; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:20px 26px">
+        <x-icon name="Tool" style="width:40px; height:40px; color:#3FD1C0"></x-icon>
+        <p style="font-size:25px; color:#B7BFD0; line-height:1.35"><b style="color:#F3F0E8">Ejecuta las herramientas</b> y le devuelve el resultado al modelo.</p>
+      </div>
+      <div style="display:flex; gap:18px; align-items:center; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:20px 26px">
+        <x-icon name="Lock" style="width:40px; height:40px; color:#3FD1C0"></x-icon>
+        <p style="font-size:25px; color:#B7BFD0; line-height:1.35"><b style="color:#F3F0E8">Aplica los permisos.</b> Qué corre solo y qué te pregunta antes.</p>
+      </div>
+      <div style="display:flex; gap:18px; align-items:center; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:20px 26px">
+        <x-icon name="Users" style="width:40px; height:40px; color:#3FD1C0"></x-icon>
+        <p style="font-size:25px; color:#B7BFD0; line-height:1.35"><b style="color:#F3F0E8">Pone la interfaz</b>, el historial y el botón de frenar.</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 12</p>
+  
+</section>
+<section id="crear" data-transition="fade" style="background:#151C2E; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">5 · Cómo se hace un agente</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Tres formas, de fácil a difícil</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:32px 24px">
+      <p style="font-size:24px; color:#3FD1C0; font-weight:600">Nivel 1 · sin programar</p>
+      <h3 style="font-size:32px; font-weight:600">Un archivo Markdown</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Claude Code lo lee y ya existe el agente.</p>
+      <div style="background:#0A0F1A; border:1px solid #2A3450; border-radius:12px; padding:24px">
+        <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.5; color:#F3F0E8; white-space:nowrap"><span style="color:#6E7890">.claude/agents/web.md</span><br>---<br>name: web<br>description: Arma sitios<br>tools: Read, Write, Bash<br>---<br>Sos un dev frontend.<br>Usá HTML y CSS simples.</p>
+      </div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:32px 24px">
+      <p style="font-size:24px; color:#F5B942; font-weight:600">Nivel 2 · unas líneas</p>
+      <h3 style="font-size:32px; font-weight:600">Agent SDK</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">El motor del harness, como librería.</p>
+      <div style="background:#0A0F1A; border:1px solid #2A3450; border-radius:12px; padding:24px">
+        <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.5; color:#F3F0E8; white-space:nowrap"><span style="color:#F5B942">from</span> claude_agent_sdk <span style="color:#F5B942">import</span> (<br>&#160;&#160;query, ClaudeAgentOptions)<br><br><span style="color:#F5B942">async for</span> m <span style="color:#F5B942">in</span> query(<br>&#160;&#160;prompt=<span style="color:#3FD1C0">"Armá la web"</span>,<br>&#160;&#160;options=ClaudeAgentOptions(<br>&#160;&#160;&#160;&#160;allowed_tools=[<span style="color:#3FD1C0">"Read"</span>,<br>&#160;&#160;&#160;&#160;&#160;&#160;<span style="color:#3FD1C0">"Write"</span>,<span style="color:#3FD1C0">"Bash"</span>])):<br>&#160;&#160;print(m)</p>
+      </div>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:32px 24px">
+      <p style="font-size:24px; color:#F5B942; font-weight:600">Nivel 3 · el loop a mano</p>
+      <h3 style="font-size:32px; font-weight:600">La API directa</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Vos escribís el loop de la slide 9.</p>
+      <div style="background:#0A0F1A; border:1px solid #2A3450; border-radius:12px; padding:24px">
+        <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; line-height:1.5; color:#F3F0E8; white-space:nowrap"><span style="color:#F5B942">while</span> True:<br>&#160;&#160;r = client.messages.create(<br>&#160;&#160;&#160;&#160;model=<span style="color:#3FD1C0">"claude-opus-5"</span>,<br>&#160;&#160;&#160;&#160;tools=tools,<br>&#160;&#160;&#160;&#160;messages=msgs,<br>&#160;&#160;&#160;&#160;max_tokens=16000)<br>&#160;&#160;<span style="color:#F5B942">if</span> r.stop_reason!=<span style="color:#3FD1C0">"tool_use"</span>:<br>&#160;&#160;&#160;&#160;<span style="color:#F5B942">break</span><br>&#160;&#160;msgs += ejecutar(r)</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 13</p>
+  
+</section>
+<section id="comparativa" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">5 · Cómo se hace un agente</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">MCP, skill, agente y plugin no son lo mismo</h2>
+  <table style="font-size:26px; color:#F3F0E8; border:1px solid #2A3450">
+    <tr style="background:#1B2338">
+      <th style="width:16%; text-align:left; padding:18px 20px; color:#6E7890"></th>
+      <th style="width:21%; text-align:left; color:#F5B942">MCP</th>
+      <th style="width:21%; text-align:left; color:#F5B942">Skill</th>
+      <th style="width:21%; text-align:left; color:#F5B942">Agente</th>
+      <th style="width:21%; text-align:left; color:#F5B942">Plugin</th>
+    </tr>
+    <tr>
+      <th style="text-align:left; color:#B7BFD0">Verbo</th>
+      <td><b>Conecta</b> el modelo con un programa</td>
+      <td><b>Instruye</b>: le enseña a hacer una tarea</td>
+      <td><b>Ejecuta</b> el loop hasta cumplir el objetivo</td>
+      <td><b>Empaqueta</b> skills, agentes, MCP y hooks</td>
+    </tr>
+    <tr style="background:#151C2E">
+      <th style="text-align:left; color:#B7BFD0">Se hace con</th>
+      <td>Un servidor en Python o TypeScript</td>
+      <td>Un archivo SKILL.md con pasos</td>
+      <td>Un .md, el Agent SDK o la API</td>
+      <td>Una carpeta con un manifest</td>
+    </tr>
+    <tr>
+      <th style="text-align:left; color:#B7BFD0">Analogía</th>
+      <td>El enchufe USB‑C</td>
+      <td>El manual de procedimientos</td>
+      <td>El empleado que hace el trabajo</td>
+      <td>La caja de herramientas completa</td>
+    </tr>
+    <tr style="background:#151C2E">
+      <th style="text-align:left; color:#B7BFD0">Hoy en la demo</th>
+      <td>Blender, Cloudflare, GitHub, navegador</td>
+      <td>Cómo se arma y publica una web</td>
+      <td>Agente web y agente 3D</td>
+      <td>Superpowers, Playwright</td>
+    </tr>
+  </table>
+  <p style="font-size:28px; color:#B7BFD0; line-height:1.4">Un agente <span style="color:#F3F0E8"><b>usa</b></span> skills y MCP. Un plugin <span style="color:#F3F0E8"><b>los distribuye</b></span> para que otro los instale con un clic.</p>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 14</p>
+  
+</section>
+<section id="sdd" data-transition="fade" style="background:#151C2E; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">5 · Cómo se trabaja con agentes</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">SDD: primero la spec, después el código</h2>
+  <div style="display:flex; gap:20px; align-items:center">
+    <div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:24px">
+      <p style="font-size:24px; color:#F5B942; font-weight:600">1 · Preguntar</p>
+      <h3 style="font-size:28px; font-weight:600">Brainstorm</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Solo lo que no puede decidir solo.</p>
+    </div>
+    <x-connector style="width:40px; color:#F5B942; border-width:4px"></x-connector>
+    <div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:24px">
+      <p style="font-size:24px; color:#F5B942; font-weight:600">2 · Spec</p>
+      <h3 style="font-size:28px; font-weight:600">Qué y por qué</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Objetivo, límites y criterio de éxito.</p>
+    </div>
+    <x-connector style="width:40px; color:#F5B942; border-width:4px"></x-connector>
+    <div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:24px">
+      <p style="font-size:24px; color:#B7BFD0; font-weight:600">3 · Plan</p>
+      <h3 style="font-size:28px; font-weight:600">Pasos chicos</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Cada uno con su prueba.</p>
+    </div>
+    <x-connector style="width:40px; color:#F5B942; border-width:4px"></x-connector>
+    <div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:24px">
+      <p style="font-size:24px; color:#B7BFD0; font-weight:600">4 · Código</p>
+      <h3 style="font-size:28px; font-weight:600">Recién ahora</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Contra la spec, no contra lo que adivina.</p>
+    </div>
+    <x-connector style="width:40px; color:#F5B942; border-width:4px"></x-connector>
+    <div style="flex:1; display:flex; flex-direction:column; gap:10px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:24px">
+      <p style="font-size:24px; color:#3FD1C0; font-weight:600">5 · Verificar</p>
+      <h3 style="font-size:28px; font-weight:600">Evidencia</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Tests, capturas, renders.</p>
+    </div>
+  </div>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#0E1320; border-left:6px solid #F5B942; border-radius:12px; padding:24px 36px">
+      <h3 style="font-size:28px; font-weight:600; color:#F5B942">Por qué es lo más usado hoy</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Un agente rápido con un pedido vago produce mucho código equivocado, muy rápido. La spec es el contrato: lo que ustedes saben, escrito antes.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#0E1320; border-left:6px solid #3FD1C0; border-radius:12px; padding:24px 36px">
+      <h3 style="font-size:28px; font-weight:600; color:#3FD1C0">Hoy lo van a ver</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Los dos agentes usan el plugin Superpowers: preguntan, escriben la spec, planifican, construyen y verifican. Miren la lista de muros antes del primer muro.</p>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 15</p>
+  
+</section>
+<section id="demo" data-transition="push" style="background:#F5B942; color:#0E1320; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:48px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#0E1320; text-transform:uppercase">Demo en vivo · 25 minutos</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:96px; font-weight:700; line-height:1.05">Dos agentes, dos pantallas, un pedido cada uno</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#0E1320; color:#F3F0E8; border-radius:20px; padding:40px 44px">
+      <p style="font-size:24px; color:#F5B942; font-weight:600">Agente 1 · Computación</p>
+      <h3 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600">El sitio de la ET21</h3>
+      <p style="font-size:28px; color:#B7BFD0; line-height:1.4">«El sitio de la escuela ya existe. Agregale la página de Taller respetando el diseño que ya tiene, verificala y publicala en et21.ar.»</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#0E1320; color:#F3F0E8; border-radius:20px; padding:40px 44px">
+      <p style="font-size:24px; color:#3FD1C0; font-weight:600">Agente 2 · Construcción</p>
+      <h3 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:600">Del plano al 3D</h3>
+      <p style="font-size:28px; color:#B7BFD0; line-height:1.4">«Esta imagen es el plano de una casa. Levantá las paredes, puertas y ventanas en Blender a escala.»</p>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#5A4A1E">ET21 · IA, MCP y agentes · 16</p>
+  
+</section>
+<section id="demo-web" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">Demo 1 · Agente web</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Qué está pasando en la pantalla 1</h2>
+  <table style="font-size:28px; color:#F3F0E8; border:1px solid #2A3450">
+    <tr style="background:#1B2338">
+      <th style="width:8%; text-align:left; padding:18px 20px; color:#F5B942">Paso</th>
+      <th style="width:46%; text-align:left; color:#F5B942">Qué hace el agente</th>
+      <th style="width:46%; text-align:left; color:#F5B942">Qué ven ustedes</th>
+    </tr>
+    <tr>
+      <td style="color:#B7BFD0">1</td>
+      <td>Lee el proyecto que ya existe: componentes, colores, tipografías, cómo está armada cada página</td>
+      <td>El agente cuenta lo que encontró, sin que nadie se lo explique</td>
+    </tr>
+    <tr style="background:#151C2E">
+      <td style="color:#B7BFD0">2</td>
+      <td>Pregunta lo que no puede decidir y escribe la spec de lo que va a hacer</td>
+      <td>La spec en pantalla, antes de la primera línea de código</td>
+    </tr>
+    <tr>
+      <td style="color:#B7BFD0">3</td>
+      <td>Busca el contenido real en el sitio viejo y arma la página nueva con los componentes que ya estaban</td>
+      <td>Una rama nueva y archivos que aparecen en el proyecto</td>
+    </tr>
+    <tr style="background:#151C2E">
+      <td style="color:#B7BFD0">4</td>
+      <td>Levanta el sitio, se saca capturas, ve los errores y los corrige. Compila hasta que queda verde</td>
+      <td>El loop de la slide 9, en vivo</td>
+    </tr>
+    <tr>
+      <td style="color:#B7BFD0">5</td>
+      <td>Sube la rama a GitHub y publica el sitio en et21.ar</td>
+      <td>Pide permiso antes de publicar. La página nueva, en et21.ar</td>
+    </tr>
+  </table>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 17</p>
+  
+</section>
+<section id="demo-blender" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#3FD1C0; text-transform:uppercase">Demo 2 · Agente 3D</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Qué está pasando en la pantalla 2</h2>
+  <table style="font-size:28px; color:#F3F0E8; border:1px solid #2A3450">
+    <tr style="background:#1B2338">
+      <th style="width:8%; text-align:left; padding:18px 20px; color:#3FD1C0">Paso</th>
+      <th style="width:46%; text-align:left; color:#3FD1C0">Qué hace el agente</th>
+      <th style="width:46%; text-align:left; color:#3FD1C0">Qué ven ustedes</th>
+    </tr>
+    <tr>
+      <td style="color:#B7BFD0">1</td>
+      <td>Mira la imagen del plano: reconoce muros, aberturas y la cota de escala</td>
+      <td>El modelo describe el plano en texto: ambientes, medidas</td>
+    </tr>
+    <tr style="background:#151C2E">
+      <td style="color:#B7BFD0">2</td>
+      <td>Convierte cada muro en coordenadas reales en metros</td>
+      <td>Una lista de paredes con inicio, fin y espesor</td>
+    </tr>
+    <tr>
+      <td style="color:#B7BFD0">3</td>
+      <td>Pregunta a Blender qué hay en la escena por MCP</td>
+      <td>La primera llamada al servidor MCP de Blender</td>
+    </tr>
+    <tr style="background:#151C2E">
+      <td style="color:#B7BFD0">4</td>
+      <td>Manda código Python a Blender: muros, puertas, ventanas, piso</td>
+      <td>Los muros apareciendo en la ventana de Blender</td>
+    </tr>
+    <tr>
+      <td style="color:#B7BFD0">5</td>
+      <td>Renderiza, compara con el plano y corrige lo que no coincide</td>
+      <td>El render final junto al plano original</td>
+    </tr>
+  </table>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 18</p>
+  
+</section>
+<section id="cierre" data-transition="fade" style="background:#151C2E; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">Cierre</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Qué significa esto para ustedes</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:36px 40px">
+      <h3 style="font-size:36px; font-weight:600; color:#F5B942">Computación</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.45">El trabajo ya no es tipear código: es saber qué pedir, revisar lo que vuelve y entender por qué funciona. Quien sabe programar le saca diez veces más al agente que quien no.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:36px 40px">
+      <h3 style="font-size:36px; font-weight:600; color:#3FD1C0">Construcción</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.45">Planos, cómputos, modelos y presupuestos se van a hacer con estas herramientas. El que conoce la obra es el que puede decir si lo que hizo la IA está bien o mal.</p>
+    </div>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:20px; background:#0E1320; border:2px solid #2A3450; border-radius:20px; padding:36px 40px">
+    <h3 style="font-size:32px; font-weight:600">Cómo empezar hoy</h3>
+    <div style="display:flex; gap:32px">
+      <div style="flex:1; display:flex; gap:16px; align-items:flex-start">
+        <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:700; line-height:1; color:#F5B942">1</p>
+        <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Instalen un agente de código y pídanle que les explique un proyecto que ya tengan.</p>
+      </div>
+      <div style="flex:1; display:flex; gap:16px; align-items:flex-start">
+        <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:700; line-height:1; color:#F5B942">2</p>
+        <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Escriban un agente de nivel 1: un archivo Markdown con una tarea chica y clara.</p>
+      </div>
+      <div style="flex:1; display:flex; gap:16px; align-items:flex-start">
+        <p style="font-family:'Space Grotesk', Arial, sans-serif; font-size:44px; font-weight:700; line-height:1; color:#F5B942">3</p>
+        <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Revisen todo lo que produce. La IA se equivoca con mucha seguridad; el criterio lo ponen ustedes.</p>
+      </div>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 19</p>
+  
+</section>
+<section id="preguntas" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px; display:flex; flex-direction:column; justify-content:center; gap:40px">
+  <div style="position:absolute; left:0; bottom:0; width:1920px; height:14px; background:linear-gradient(90deg, #3FD1C0 0%, #F5B942 100%)"></div>
+  <h1 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:160px; font-weight:700; line-height:1">¿Preguntas?</h1>
+  <p style="font-size:44px; color:#B7BFD0; line-height:1.3">Sobre la IA, los agentes, la web, el 3D o cómo empezar.</p>
+  <div style="flex:1"></div>
+  <div style="display:flex; justify-content:space-between; align-items:flex-end">
+    <p style="font-size:32px; font-weight:600">Ezequiel Corbalán</p>
+    <p style="font-size:32px; color:#B7BFD0">ET21 · Fragata Escuela Libertad · 18/09/2026</p>
+  </div>
+  
+</section>
+</div></div>
+
+<div id="notas"><h4>Notas del orador</h4><div id="notas-texto"></div></div>
+
+<div id="barra">
+  <span id="contador">1 / 20</span>
+  <span id="titulo-slide"></span>
+  <button id="btn-anterior">&larr;</button>
+  <button id="btn-siguiente">&rarr;</button>
+  <button id="btn-notas">Notas (N)</button>
+  <button id="btn-pantalla">Pantalla completa (F)</button>
+</div>
+
+<script>
+(function () {
+  const ICONOS = {"Book": "<path d=\"M4 4h11a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H4z\"/><path d=\"M4 4v14\"/>", "Tool": "<path d=\"M15 3a5 5 0 0 0-4.6 7L3 17.4 5.6 20l7.4-7.4A5 5 0 1 0 15 3z\"/>", "Activity": "<path d=\"M2 12h4l3 8 4-16 3 8h6\"/>", "Warning": "<path d=\"M12 3 2 20h20z\"/><path d=\"M12 9v5\"/><circle cx=\"12\" cy=\"17\" r=\".6\" fill=\"currentColor\"/>", "Lightning": "<path d=\"M13 2 4 14h6l-1 8 9-12h-6z\"/>", "Database": "<ellipse cx=\"12\" cy=\"6\" rx=\"8\" ry=\"3\"/><path d=\"M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6\"/><path d=\"M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3\"/>", "Lightbulb": "<path d=\"M9 18h6\"/><path d=\"M10 21h4\"/><path d=\"M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z\"/>", "Lock": "<rect x=\"4\" y=\"10\" width=\"16\" height=\"11\" rx=\"2\"/><path d=\"M8 10V7a4 4 0 0 1 8 0v3\"/>", "Users": "<circle cx=\"9\" cy=\"8\" r=\"3.2\"/><path d=\"M2.5 20a6.5 6.5 0 0 1 13 0\"/><path d=\"M16 5.5a3.2 3.2 0 0 1 0 6\"/><path d=\"M17 14.4a6.5 6.5 0 0 1 4.5 5.6\"/>"};
+  const NOTAS = ["Arranque (1 min). Presentarse: doy clases acá, trabajo con esto todos los días. Promesa de la charla: en 40 minutos van a entender qué es un agente de IA y van a ver dos trabajando al mismo tiempo, uno armando la web de la escuela y otro levantando un plano en 3D. Pedirles que guarden las preguntas para el final, pero que si algo no se entiende levanten la mano.", "30 segundos. Marcar que la teoría es corta a propósito: la idea es entender lo justo para que la demo tenga sentido. Avisar que las demos arrancan solas mientras hablamos, porque los agentes tardan unos minutos.", "2 min. Preguntar quién usó ChatGPT o Gemini: casi todos. Eso es la etapa \"chat\". Después vino el copiloto en el editor de código, que sugiere pero no decide. Hoy la etapa es el agente: le das un objetivo y lo cumple usando programas reales. Los modelos actuales (Claude 5, GPT, Gemini) ya trabajan varias horas seguidas en una tarea. La frase clave: la IA ahora tiene manos.", "1 min. Tres cambios concretos, sin números: contexto largo (le podés dar todo el proyecto), herramientas (toca programas reales) y autonomía (se corrige sola). Bajarlo a las dos orientaciones: en computación ya se usa para escribir y publicar software; en construcción para leer planos, calcular y modelar. Las dos demos de hoy son exactamente eso.", "2 min. Desmitificar: el modelo es una función que recibe texto y devuelve la próxima palabra probable, muchas veces seguidas. Es impresionante lo que sale de eso, pero tiene tres límites duros: no ejecuta nada, no ve nada fuera del texto que le dimos, y no recuerda entre conversaciones. Esos tres límites son exactamente lo que resuelven las herramientas, MCP y los agentes. Esa es la escalera de la charla.", "2 min. Esto se llama \"tool use\" y es la base de todo. El modelo no ejecuta nada: escribe un pedido con un formato acordado, por ejemplo \"leer archivo index.html\". Un programa (Claude Code, en nuestro caso) lee ese pedido, lo ejecuta de verdad y le devuelve el resultado como texto. El modelo sigue con ese resultado en la conversación. Insistir en el punto: las manos las pone el programa, no el modelo. Eso es lo que hace que sea controlable: el programa decide qué herramientas le da y cuáles pide permiso.", "2 min. Antes de MCP cada herramienta se conectaba a cada IA de forma distinta, como cuando cada celular tenía su cargador. MCP (Model Context Protocol, un estándar abierto de Anthropic que adoptaron todos) es el USB-C: un programa expone sus funciones como \"servidor MCP\", y cualquier cliente (Claude Code, Claude Desktop, otros editores) las enchufa. Hoy vamos a usar cuatro: Blender para construir el 3D, Cloudflare para publicar, GitHub para el código y un navegador para probar la web. El agente no sabe nada especial de Blender: lee la lista de herramientas que el servidor le ofrece y las usa.", "1 min. Un servidor MCP expone tres cosas: tools (acciones), resources (datos para leer) y prompts (recetas). Lo importante para ustedes: cualquiera puede escribir un servidor MCP con unas decenas de líneas de Python o TypeScript. Si en la escuela tienen un sistema propio, le pueden poner un servidor MCP y cualquier agente lo va a poder usar. Mostrar las tres tools de Blender que va a usar el agente 2.", "2 min. Esta es LA slide. Un agente no es un modelo más grande: es un modelo con herramientas metido en un loop. Recibe un objetivo, piensa qué falta, usa una herramienta, mira el resultado y vuelve a pensar. Repite hasta que el objetivo está cumplido. Cada vuelta del loop es una llamada al modelo. La diferencia con el chat es que el resultado de la herramienta vuelve solo, sin que vos copies y pegues. Ejemplo de la web: decenas de vueltas, el agente ve sus propios errores en la captura y los corrige.", "1 min. Cuatro piezas: instrucciones (el \"system prompt\"), herramientas, memoria y permisos. Insistir en permisos: en la demo van a ver que el agente pide confirmación antes de publicar. Y en que menos herramientas es mejor: un agente para armar webs no necesita acceso a Blender. Eso lleva directo a la próxima slide: por eso usamos dos agentes distintos y no uno gigante.", "1 min. Un agente puede lanzar otros agentes. Cada uno tiene su propia conversación, sus propias herramientas y su propia tarea. El orquestador reparte el trabajo y junta los resultados. Hoy: dos subagentes en paralelo, uno con herramientas de web y otro con herramientas de Blender. Ninguno sabe que el otro existe. Es exactamente lo que van a ver en las dos pantallas.", "2 min. Esta palabra conviene que se la lleven, porque si no queda dando vueltas. Si el modelo es el motor, el harness es el auto entero: chasis, caja, volante y pedales. Claude Code, OpenCode, Cursor, Codex y Aider son harnesses, y el modelo puede ser el mismo: lo que cambia es todo el trabajo de alrededor. Recorrer las cinco cosas de la derecha sin detenerse mucho. La comparación que se entiende: un buen piloto con un auto malo pierde. Elegir el harness importa tanto como elegir el modelo, y por eso hay tantos proyectos compitiendo en esa capa. Si preguntan cuál usar: hoy usamos Claude Code, pero todo lo que van a ver se puede hacer con cualquiera de los otros.", "2 min. Nivel 1: un archivo de texto con nombre, descripción, qué herramientas puede usar y las instrucciones. Eso ya es un subagente en Claude Code; cualquiera de ustedes lo puede escribir hoy. Nivel 2: el Agent SDK es el mismo motor del harness que acabamos de ver, como librería de Python o TypeScript; con diez líneas tenés un agente con herramientas de archivos y terminal. Nivel 3: la API cruda; escribís vos el loop que vimos en la slide 9: llamás al modelo, si pide una herramienta la ejecutás y le devolvés el resultado, hasta que deja de pedir. Los tres hacen lo mismo; cambia cuánto control querés.", "1 min. La confusión más común. Cuatro verbos: MCP conecta, skill instruye, agente ejecuta, plugin empaqueta. Un plugin no es un agente: es la caja donde vienen skills, agentes, servidores MCP y hooks para instalarlos juntos. Los que hoy están corriendo son plugins que instalé yo (Superpowers para la forma de trabajar, Playwright para el navegador). Si alguien pregunta por hooks: son scripts que corren automáticamente antes o después de una acción del agente, por ejemplo correr los tests cada vez que escribe un archivo.", "1 min. SDD = Spec-Driven Development. Es la forma de trabajar con agentes que más se impuso: en vez de \"hacé la web\" y rezar, el agente primero pregunta, escribe una spec (qué, límites, criterio de éxito), arma un plan de pasos chicos, recién ahí codea y al final verifica con evidencia. El motivo: un agente rápido con un pedido vago produce mucho código equivocado. Conectar con las demos: el agente 2 va a mostrar la lista de muros como spec y va a pedir confirmación antes de construir; el agente 1 va a escribir la spec del sitio antes del primer HTML. Para los de construcción: es lo mismo que un pliego antes de la obra.", "Transición a la demo. Mostrar las dos ventanas de Claude Code lado a lado. Leer en voz alta los dos pedidos tal como se los escribo, para que vean que es lenguaje normal, sin comandos. Aclarar por qué el agente 1 NO arranca de cero: el sitio de la escuela ya está hecho con Astro, y agarrar un proyecto que ya existe es lo que pasa de verdad en el trabajo. Disparar los dos y volver a las slides de apoyo mientras trabajan. Si algo falla en vivo, eso también es parte de la demo: se muestra cómo el agente lee el error y lo corrige.", "Slide de apoyo para tener en pantalla mientras corre el agente 1. Ir señalando en qué paso está. Cosas para remarcar en vivo: que entiende un proyecto ajeno sin que nadie le explique nada, que escribe la spec antes de codear, que se saca capturas solo, y que pide permiso antes de publicar. El sitio vive en Cloudflare: el comando de deploy compila las páginas y las sube a servidores repartidos por el mundo, y en menos de un minuto están en et21.ar. Abrir et21.ar en el proyector antes de arrancar, así ven el antes y el después.", "Slide de apoyo para el agente 2. Para los de construcción: el agente no tiene un botón \"plano a 3D\"; lo que hace es leer la imagen como lo harían ustedes (muros, aberturas, escala), pasar eso a números y después usar Blender por MCP como si fuera un operador. El código Python que manda a Blender es el mismo que escribirían a mano. Mostrar el render final al lado del plano y señalar diferencias: la IA se equivoca, y verlo es parte de aprender a usarla.", "3 min. Mensaje de cierre, sin dramatismo: la herramienta no reemplaza saber programar ni saber de obra; los multiplica. El que sabe le saca mucho más. Tres pasos concretos y baratos para arrancar esta semana. El tercero es el más importante: revisar siempre, la IA se equivoca con total seguridad. Dejar la puerta abierta: si quieren armar un taller de agentes en la escuela, hablamos.", "Preguntas frecuentes para tener a mano: ¿me va a sacar el trabajo? (cambia el trabajo; el que sabe usa la herramienta mejor). ¿Es gratis? (hay planes gratuitos de los chats; los agentes de código suelen ser pagos, y hay opciones abiertas). ¿Puede romper algo? (sí, por eso existen los permisos: borrar y publicar siempre se preguntan). ¿Cómo aprendo? (empezar con el nivel 1 de la slide 12 y trabajar con spec, slide 14)."];
+  const TITULOS = ["IA que hace cosas", "Qué vamos a hacer hoy", "De chat a agente en cuatro años", "Tres cosas que cambiaron", "Un modelo predice la próxima palabra", "El modelo pide, el programa ejecuta", "MCP es el USB‑C de la IA", "Qué ofrece un servidor MCP", "Un agente es un loop", "Anatomía de un agente", "Subagentes: dos trabajos a la vez", "El modelo es el motor. El harness es el auto", "Tres formas, de fácil a difícil", "MCP, skill, agente y plugin no son lo mismo", "SDD: primero la spec, después el código", "Dos agentes, dos pantallas, un pedido cada uno", "Qué está pasando en la pantalla 1", "Qué está pasando en la pantalla 2", "Qué significa esto para ustedes", "¿Preguntas?"];
+
+  // ---- iconos
+  document.querySelectorAll('x-icon').forEach(function (el) {
+    const d = ICONOS[el.getAttribute('name')] || '<circle cx="12" cy="12" r="9"/>';
+    el.innerHTML = '<svg viewBox="0 0 24 24">' + d + '</svg>';
+  });
+
+  // ---- conectores
+  function num(el, attr) { const v = el.getAttribute(attr); return v === null ? null : parseFloat(v); }
+
+  function puntos(x1, y1, x2, y2, ruta) {
+    if (ruta === 'hv') return [[x1, y1], [x2, y1], [x2, y2]];
+    if (ruta === 'vh') return [[x1, y1], [x1, y2], [x2, y2]];
+    if (ruta === 'elbow') {
+      return Math.abs(x2 - x1) >= Math.abs(y2 - y1)
+        ? [[x1, y1], [(x1 + x2) / 2, y1], [(x1 + x2) / 2, y2], [x2, y2]]
+        : [[x1, y1], [x1, (y1 + y2) / 2], [x2, (y1 + y2) / 2], [x2, y2]];
+    }
+    return [[x1, y1], [x2, y2]];
+  }
+
+  function flecha(pa, pb, grosor) {
+    const dx = pb[0] - pa[0], dy = pb[1] - pa[1];
+    const L = Math.hypot(dx, dy) || 1;
+    const ux = dx / L, uy = dy / L, t = grosor * 3.4;
+    const bx = pb[0] - ux * t, by = pb[1] - uy * t;
+    const px = -uy * t * 0.52, py = ux * t * 0.52;
+    return (bx + px) + ',' + (by + py) + ' ' + pb[0] + ',' + pb[1] + ' ' + (bx - px) + ',' + (by - py);
+  }
+
+  document.querySelectorAll('x-connector').forEach(function (el) {
+    const est = getComputedStyle(el);
+    const color = est.color || '#888';
+    const grosor = parseFloat(est.borderTopWidth) || 2;
+    const guion = est.borderTopStyle === 'dashed' ? '10 8'
+                : est.borderTopStyle === 'dotted' ? '2 6' : '';
+    const cabeza = el.getAttribute('head') || 'end';
+    const x1 = num(el, 'x1');
+
+    if (x1 !== null) {                       // conector con coordenadas
+      const padre = el.parentElement;
+      if (getComputedStyle(padre).position === 'static') padre.style.position = 'relative';
+      const W = padre.clientWidth, H = padre.clientHeight;
+      const ps = puntos(x1, num(el, 'y1'), num(el, 'x2'), num(el, 'y2'),
+                        el.getAttribute('route') || 'straight');
+      let svg = '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" '
+              + 'style="position:absolute;left:0;top:0;overflow:visible;pointer-events:none">'
+              + '<polyline points="' + ps.map(function (p) { return p.join(','); }).join(' ') + '" '
+              + 'fill="none" stroke="' + color + '" stroke-width="' + grosor + '" '
+              + 'stroke-linecap="round" stroke-linejoin="round"'
+              + (guion ? ' stroke-dasharray="' + guion + '"' : '') + '/>';
+      if (cabeza === 'end' || cabeza === 'both') {
+        svg += '<polygon points="' + flecha(ps[ps.length - 2], ps[ps.length - 1], grosor) + '" fill="' + color + '"/>';
+      }
+      if (cabeza === 'both') {
+        svg += '<polygon points="' + flecha(ps[1], ps[0], grosor) + '" fill="' + color + '"/>';
+      }
+      el.style.position = 'absolute';
+      el.style.left = '0'; el.style.top = '0';
+      el.innerHTML = svg + '</svg>';
+    } else {                                 // conector suelto, dentro de una fila
+      const W = parseFloat(est.width) || 48, H = Math.max(grosor * 5, 20);
+      el.style.display = 'inline-block';
+      el.style.height = H + 'px';
+      el.style.flex = '0 0 ' + W + 'px';
+      const fin = [W, H / 2], ini = [0, H / 2];
+      el.innerHTML = '<svg width="' + W + '" height="' + H + '" style="overflow:visible;display:block">'
+        + '<line x1="0" y1="' + H / 2 + '" x2="' + (W - grosor * 3) + '" y2="' + H / 2 + '" '
+        + 'stroke="' + color + '" stroke-width="' + grosor + '" stroke-linecap="round"/>'
+        + (cabeza === 'none' ? '' : '<polygon points="' + flecha(ini, fin, grosor) + '" fill="' + color + '"/>')
+        + '</svg>';
+    }
+  });
+
+  // ---- encajar diapositivas mas altas que 1080
+  // Se achica el bloque de diagrama, no el texto, y con transform para que los
+  // conectores (que ya estan dibujados) escalen junto con las cajas.
+  document.querySelectorAll('#pista > section').forEach(function (s) {
+    s.classList.add('activa');
+    const exceso = s.scrollHeight - 1080;
+    if (exceso > 1) {
+      const bloques = Array.from(s.children).filter(function (el) {
+        return el.tagName === 'DIV' && parseFloat(getComputedStyle(el).height) > 200;
+      });
+      const host = bloques.sort(function (a, b) { return b.offsetHeight - a.offsetHeight; })[0];
+      if (host) {
+        const alto = host.offsetHeight;
+        const k = Math.max(0.5, (alto - exceso) / alto);
+        host.style.transformOrigin = 'top center';
+        host.style.transform = 'scale(' + k + ')';
+        host.style.marginBottom = (-(alto - alto * k)) + 'px';
+      }
+    }
+    s.classList.remove('activa');
+  });
+
+  // ---- navegacion
+  const slides = Array.from(document.querySelectorAll('#pista > section'));
+  const pista = document.getElementById('pista');
+  const contador = document.getElementById('contador');
+  const tituloSlide = document.getElementById('titulo-slide');
+  const notas = document.getElementById('notas');
+  const notasTexto = document.getElementById('notas-texto');
+  let actual = 0;
+
+  function mostrar(i) {
+    actual = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function (s, n) { s.classList.toggle('activa', n === actual); });
+    contador.textContent = (actual + 1) + ' / ' + slides.length;
+    tituloSlide.textContent = TITULOS[actual] || '';
+    notasTexto.textContent = NOTAS[actual] || 'Esta diapositiva no tiene notas.';
+    location.hash = String(actual + 1);
+    encajar();
+  }
+
+  function encajar() {
+    const esc = document.getElementById('escenario').getBoundingClientRect();
+    const k = Math.min(esc.width / 1920, esc.height / 1080) * 0.98;
+    pista.style.transform = 'scale(' + k + ')';
+  }
+
+  document.getElementById('btn-siguiente').onclick = function () { mostrar(actual + 1); };
+  document.getElementById('btn-anterior').onclick = function () { mostrar(actual - 1); };
+  document.getElementById('btn-notas').onclick = function () {
+    notas.classList.toggle('visible');
+    document.body.classList.toggle('con-notas');
+    encajar();
+  };
+  document.getElementById('btn-pantalla').onclick = function () {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  };
+
+  document.addEventListener('keydown', function (e) {
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].indexOf(e.key) >= 0) { mostrar(actual + 1); e.preventDefault(); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].indexOf(e.key) >= 0) { mostrar(actual - 1); e.preventDefault(); }
+    else if (e.key === 'Home') mostrar(0);
+    else if (e.key === 'End') mostrar(slides.length - 1);
+    else if (e.key === 'n' || e.key === 'N') document.getElementById('btn-notas').click();
+    else if (e.key === 'f' || e.key === 'F') document.getElementById('btn-pantalla').click();
+  });
+
+  window.addEventListener('resize', encajar);
+  const inicio = parseInt(location.hash.replace('#', ''), 10);
+  mostrar(isNaN(inicio) ? 0 : inicio - 1);
+})();
+</script>
+</body>
+</html>

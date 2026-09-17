@@ -1,0 +1,38 @@
+<section id="mcp" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:32px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">3 · MCP: Model Context Protocol</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">MCP es el USB‑C de la IA</h2>
+  <!-- Host 0,200,420,300  Blender 1244,0,420,130  Coolify 1244,190,420,130  GitHub 1244,380,420,130  Drive 1244,570,420,130  bus x=832 -->
+  <div style="position:relative; width:1664px; height:700px">
+    <div style="position:absolute; left:0; top:200px; width:420px; height:300px; display:flex; flex-direction:column; justify-content:center; gap:12px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:36px">
+      <p style="font-size:24px; color:#3FD1C0; font-weight:600">Cliente MCP</p>
+      <h3 style="font-size:36px; font-weight:600">Claude Code</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.4">Acá viven el modelo y el agente. Un solo enchufe para todo.</p>
+    </div>
+    <div style="position:absolute; left:1244px; top:0; width:420px; height:130px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:24px 32px">
+      <h3 style="font-size:32px; font-weight:600">Blender</h3>
+      <p style="font-size:24px; color:#B7BFD0">crear objetos, renderizar</p>
+    </div>
+    <div style="position:absolute; left:1244px; top:190px; width:420px; height:130px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:24px 32px">
+      <h3 style="font-size:32px; font-weight:600">Cloudflare</h3>
+      <p style="font-size:24px; color:#B7BFD0">publicar el sitio</p>
+    </div>
+    <div style="position:absolute; left:1244px; top:380px; width:420px; height:130px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:24px 32px">
+      <h3 style="font-size:32px; font-weight:600">GitHub</h3>
+      <p style="font-size:24px; color:#B7BFD0">repositorios, código, PRs</p>
+    </div>
+    <div style="position:absolute; left:1244px; top:570px; width:420px; height:130px; display:flex; flex-direction:column; justify-content:center; gap:4px; background:#1B2338; border:2px solid #2A3450; border-radius:16px; padding:24px 32px">
+      <h3 style="font-size:32px; font-weight:600">Navegador</h3>
+      <p style="font-size:24px; color:#B7BFD0">abrir páginas, probar la web</p>
+    </div>
+    <x-connector x1="420" y1="350" x2="832" y2="350" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="65" x2="832" y2="635" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="65" x2="1244" y2="65" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="255" x2="1244" y2="255" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="445" x2="1244" y2="445" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="832" y1="635" x2="1244" y2="635" style="color:#F5B942; border-width:4px"></x-connector>
+    <p style="position:absolute; left:480px; top:296px; width:300px; font-size:28px; font-weight:600; color:#F5B942; text-align:center; white-space:nowrap">protocolo MCP</p>
+    <p style="position:absolute; left:860px; top:660px; width:360px; font-size:24px; color:#6E7890; white-space:nowrap">servidores MCP</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 7</p>
+  <aside>2 min. Antes de MCP cada herramienta se conectaba a cada IA de forma distinta, como cuando cada celular tenía su cargador. MCP (Model Context Protocol, un estándar abierto de Anthropic que adoptaron todos) es el USB-C: un programa expone sus funciones como "servidor MCP", y cualquier cliente (Claude Code, Claude Desktop, otros editores) las enchufa. Hoy vamos a usar cuatro: Blender para construir el 3D, Cloudflare para publicar, GitHub para el código y un navegador para probar la web. El agente no sabe nada especial de Blender: lee la lista de herramientas que el servidor le ofrece y las usa.</aside>
+</section>

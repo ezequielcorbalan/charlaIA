@@ -1,0 +1,40 @@
+<section id="agente" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:32px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">4 · Agentes</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Un agente es un loop</h2>
+  <!-- Objetivo 0,120,352,160  Pensar 437,120,352,160  Herramienta 874,120,352,160  Resultado 1311,120,352,160  Listo 1311,400,352,140  Ejemplo 0,580,1664,120 -->
+  <div style="position:relative; width:1664px; height:700px">
+    <div style="position:absolute; left:0; top:120px; width:352px; height:160px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600">1. Objetivo</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">lo que pediste</p>
+    </div>
+    <div style="position:absolute; left:437px; top:120px; width:352px; height:160px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600">2. Pensar</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">¿qué falta? ¿qué sigue?</p>
+    </div>
+    <div style="position:absolute; left:874px; top:120px; width:352px; height:160px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600">3. Herramienta</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">leer, escribir, ejecutar</p>
+    </div>
+    <div style="position:absolute; left:1311px; top:120px; width:352px; height:160px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600">4. Resultado</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">¿funcionó? ¿hubo error?</p>
+    </div>
+    <div style="position:absolute; left:1311px; top:400px; width:352px; height:140px; display:flex; flex-direction:column; justify-content:center; gap:6px; background:#1B2338; border:2px solid #3FD1C0; border-radius:20px; padding:24px 28px">
+      <h3 style="font-size:32px; font-weight:600; color:#3FD1C0">5. Listo</h3>
+      <p style="font-size:24px; color:#B7BFD0; line-height:1.3">objetivo cumplido</p>
+    </div>
+    <x-connector x1="352" y1="200" x2="437" y2="200" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="789" y1="200" x2="874" y2="200" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1226" y1="200" x2="1311" y2="200" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1487" y1="120" x2="1487" y2="40" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1487" y1="40" x2="613" y2="40" head="none" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="613" y1="40" x2="613" y2="120" style="color:#F5B942; border-width:4px"></x-connector>
+    <x-connector x1="1487" y1="280" x2="1487" y2="400" style="color:#3FD1C0; border-width:4px"></x-connector>
+    <p style="position:absolute; left:800px; top:56px; width:500px; font-size:24px; font-weight:600; color:#F5B942; text-align:center; white-space:nowrap">falta algo: volver a pensar</p>
+    <div style="position:absolute; left:0; top:580px; width:1664px; height:120px; display:flex; flex-direction:column; justify-content:center; gap:8px; background:#151C2E; border-left:6px solid #F5B942; border-radius:12px; padding:20px 40px">
+      <p style="font-size:26px; color:#F3F0E8; line-height:1.4">«Armá la web de la escuela»: lee la carpeta, escribe el HTML, levanta el servidor, saca una captura, ve que el menú está roto, lo corrige, vuelve a mirar. Decenas de vueltas hasta que queda.</p>
+    </div>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 9</p>
+  <aside>2 min. Esta es LA slide. Un agente no es un modelo más grande: es un modelo con herramientas metido en un loop. Recibe un objetivo, piensa qué falta, usa una herramienta, mira el resultado y vuelve a pensar. Repite hasta que el objetivo está cumplido. Cada vuelta del loop es una llamada al modelo. La diferencia con el chat es que el resultado de la herramienta vuelve solo, sin que vos copies y pegues. Ejemplo de la web: decenas de vueltas, el agente ve sus propios errores en la captura y los corrige.</aside>
+</section>

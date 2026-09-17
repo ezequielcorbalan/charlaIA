@@ -1,0 +1,30 @@
+<section id="mcp-que" data-transition="fade" style="background:#151C2E; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#F5B942; text-transform:uppercase">3 · MCP: Model Context Protocol</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Qué ofrece un servidor MCP</h2>
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #F5B942; border-radius:20px; padding:36px">
+      <x-icon name="Lightning" style="width:52px; height:52px; color:#F5B942"></x-icon>
+      <h3 style="font-size:36px; font-weight:600">Tools</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Acciones que el modelo puede pedir. Cada una tiene nombre, descripción y parámetros.</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#F5B942; line-height:1.5">crear_pared(x, y, largo)<br>deployar_app(nombre)</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px">
+      <x-icon name="Database" style="width:52px; height:52px; color:#3FD1C0"></x-icon>
+      <h3 style="font-size:36px; font-weight:600">Resources</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Datos que el modelo puede leer: archivos, la escena de Blender, una tabla, un manual.</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#3FD1C0; line-height:1.5">escena://objetos<br>docs://api/blender</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#1B2338; border:2px solid #2A3450; border-radius:20px; padding:36px">
+      <x-icon name="Book" style="width:52px; height:52px; color:#3FD1C0"></x-icon>
+      <h3 style="font-size:36px; font-weight:600">Prompts</h3>
+      <p style="font-size:26px; color:#B7BFD0; line-height:1.4">Recetas listas para tareas comunes, escritas por quien hizo el servidor.</p>
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#3FD1C0; line-height:1.5">"armá una casa desde<br>este plano"</p>
+    </div>
+  </div>
+  <div style="display:flex; flex-direction:column; gap:12px; background:#0E1320; border-left:6px solid #F5B942; border-radius:12px; padding:28px 40px">
+    <h3 style="font-size:28px; font-weight:600; color:#F5B942">Lo que vamos a usar hoy del servidor de Blender</h3>
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:26px; color:#B7BFD0; line-height:1.5">get_objects_summary · execute_blender_code · render_viewport_to_path</p>
+  </div>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 8</p>
+  <aside>1 min. Un servidor MCP expone tres cosas: tools (acciones), resources (datos para leer) y prompts (recetas). Lo importante para ustedes: cualquiera puede escribir un servidor MCP con unas decenas de líneas de Python o TypeScript. Si en la escuela tienen un sistema propio, le pueden poner un servidor MCP y cualquier agente lo va a poder usar. Mostrar las tres tools de Blender que va a usar el agente 2.</aside>
+</section>

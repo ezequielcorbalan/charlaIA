@@ -13,7 +13,8 @@ Se dio por primera vez en la Escuela Técnica N° 21 D.E. 10 "Fragata Escuela Li
 | Carpeta | Qué hay |
 |---|---|
 | [`charla/guion.md`](charla/guion.md) | El guion de los 15 minutos de teoría, minuto a minuto |
-| [`charla/deck.md`](charla/deck.md) | Cómo rehacer las diapositivas |
+| [`charla/deck.html`](charla/deck.html) | **Las 20 diapositivas.** Un solo archivo: lo abrís en el navegador y ya podés presentar |
+| [`charla/slides/`](charla/slides/) | Las diapositivas sueltas, para editarlas. [`deck.md`](charla/deck.md) explica cómo |
 | [`RUNBOOK.md`](RUNBOOK.md) | El operativo del día: checklist previo, qué decir en cada momento, qué hacer si algo falla |
 | [`demo-web/`](demo-web/) | Demo 1: un agente que trabaja sobre un sitio web real y lo publica |
 | [`demo-blender/`](demo-blender/) | Demo 2: un agente que lee un plano de arquitectura y lo levanta en 3D |
@@ -90,6 +91,16 @@ Para manejar Blender desde el agente hace falta un servidor MCP de Blender. Si n
 ---
 
 ## Probar que todo anda, antes de la charla
+
+### Las diapositivas
+
+Abrí `charla/deck.html` en el navegador. Flechas para moverte, **N** para las notas del orador, **F** para pantalla completa. No necesita internet ni instalar nada.
+
+Si editás alguna diapositiva de `charla/slides/`, volvé a armar el archivo:
+
+```bash
+python charla/exportar_deck.py
+```
 
 ### El plano
 

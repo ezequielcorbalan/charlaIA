@@ -1,0 +1,38 @@
+<section id="demo-blender" data-transition="fade" style="background:#0E1320; color:#F3F0E8; font-family:'IBM Plex Sans', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; gap:40px">
+  <p style="font-size:24px; font-weight:600; letter-spacing:3px; color:#3FD1C0; text-transform:uppercase">Demo 2 · Agente 3D</p>
+  <h2 style="font-family:'Space Grotesk', Arial, sans-serif; font-size:72px; font-weight:600; line-height:1.1">Qué está pasando en la pantalla 2</h2>
+  <table style="font-size:28px; color:#F3F0E8; border:1px solid #2A3450">
+    <tr style="background:#1B2338">
+      <th style="width:8%; text-align:left; padding:18px 20px; color:#3FD1C0">Paso</th>
+      <th style="width:46%; text-align:left; color:#3FD1C0">Qué hace el agente</th>
+      <th style="width:46%; text-align:left; color:#3FD1C0">Qué ven ustedes</th>
+    </tr>
+    <tr>
+      <td style="color:#B7BFD0">1</td>
+      <td>Mira la imagen del plano: reconoce muros, aberturas y la cota de escala</td>
+      <td>El modelo describe el plano en texto: ambientes, medidas</td>
+    </tr>
+    <tr style="background:#151C2E">
+      <td style="color:#B7BFD0">2</td>
+      <td>Convierte cada muro en coordenadas reales en metros</td>
+      <td>Una lista de paredes con inicio, fin y espesor</td>
+    </tr>
+    <tr>
+      <td style="color:#B7BFD0">3</td>
+      <td>Pregunta a Blender qué hay en la escena por MCP</td>
+      <td>La primera llamada al servidor MCP de Blender</td>
+    </tr>
+    <tr style="background:#151C2E">
+      <td style="color:#B7BFD0">4</td>
+      <td>Manda código Python a Blender: muros, puertas, ventanas, piso</td>
+      <td>Los muros apareciendo en la ventana de Blender</td>
+    </tr>
+    <tr>
+      <td style="color:#B7BFD0">5</td>
+      <td>Renderiza, compara con el plano y corrige lo que no coincide</td>
+      <td>El render final junto al plano original</td>
+    </tr>
+  </table>
+  <p style="position:absolute; left:128px; bottom:64px; font-size:24px; color:#6E7890">ET21 · IA, MCP y agentes · 18</p>
+  <aside>Slide de apoyo para el agente 2. Para los de construcción: el agente no tiene un botón "plano a 3D"; lo que hace es leer la imagen como lo harían ustedes (muros, aberturas, escala), pasar eso a números y después usar Blender por MCP como si fuera un operador. El código Python que manda a Blender es el mismo que escribirían a mano. Mostrar el render final al lado del plano y señalar diferencias: la IA se equivoca, y verlo es parte de aprender a usarla.</aside>
+</section>
